@@ -7,7 +7,7 @@ from class_factory import terminal_interpreter, mqueue
 
 async def main():
     try:
-        await mqueue.start()
+        await mqueue.start_listener()
         await terminal_interpreter.terminal_listen()
     
     finally:
@@ -15,7 +15,7 @@ async def main():
         print("Cleaning up resources...")
         
         # Close NATS connection
-        await mqueue.close()
+        await mqueue.close_listener()
  
         print("Cleanup completed.")
 
