@@ -10,6 +10,6 @@ mqueue = NATSComm(
     subject_root=settings.mQueueSubjectRoot,
     mqueue_handler=mqueue_handler,
 )
-terminal_interpreter = TerminalInterpreter(mqueue_handler)
 mqueue_handler.mqueue_sender = mqueue
+terminal_interpreter = TerminalInterpreter(mqueue_handler)
 mqueue_handler.terminal_interpreter = terminal_interpreter

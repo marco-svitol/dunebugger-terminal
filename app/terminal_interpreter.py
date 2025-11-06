@@ -16,25 +16,8 @@ class TerminalInterpreter:
         self.enableHistory(history_path)
         atexit.register(self.save_history, history_path)
         self.mqueue_handler = mqueue_handler
+        self.help = "Help not loaded yet."
         self.running = True
-
-        if not settings.ON_RASPBERRY_PI:
-            help_insert_1 = "not "
-            help_insert_2 = " (OUTPUT & INPUT gpios)"
-        else:
-            help_insert_1 = ""
-            help_insert_2 = " (OUTPUT gpios only)"
-
-        # Dynamically create the help string
-        self.help = f"I am {help_insert_1}a Raspberry. You can ask me to:\n"
-        for command, details in settings.command_handlers.items():
-            self.help += f"    {command}: {details['description']}\n"
-        self.help += f"    <#gpionum or label> on: set gpio status High{help_insert_2}\n"
-        self.help += f"    <#gpionum or label> off: set gpio status Low{help_insert_2}\n"
-        self.help += "    h, ?: show this help\n"
-        self.help += "    s: show GPIO status\n"
-        self.help += "    t: show dunebugger configuration\n"
-        self.help += "    q, quit, exit: exit the program\n"
 
     async def terminal_handle_reply(self, subject, command_reply_message):
         """Handle replies from the command interpreter."""
@@ -45,6 +28,8 @@ class TerminalInterpreter:
                 self.handle_show_configuration(command_reply_message)
             elif subject == "log_message":
                 self._log_queue_message(command_reply_message["level"], command_reply_message["message"])
+            elif subject == "commands_list":
+                self.help = self.setup_help(commands_list = command_reply_message)
             else:
                 print(command_reply_message)
         else:
@@ -67,15 +52,6 @@ class TerminalInterpreter:
             self.running = False
 
     async def terminal_input_loop(self):
-        # Check if we're in an interactive environment
-        # TODO: this is useless because it will never run in a container
-        # if not sys.stdin.isatty():
-        #     logger.info("No interactive terminal available (running in container/background). Terminal input disabled.")
-        #     # Keep the loop alive but don't try to read input
-        #     while self.running:
-        #         await asyncio.sleep(1)
-        #     return
-
         # Create an event loop for the stdin reader
         loop = asyncio.get_event_loop()
 
@@ -185,5 +161,30 @@ mode: {mode}, state: {state}, switch: {COLORS['RESET']}{switchcolor}{switchstate
         else:
             # For unknown levels, use info as fallback
             logger.info(f"{color_cyan}{level}: core: {message}{color_reset}")
+
+    async def request_commands_list(self):
+        """Request the commands list from the dunebugger core."""
+        await self.mqueue_handler.dispatch_message("get_commands_list", "terminal_command", "core")
+
+    def setup_help(self, commands_list):
+        try:
+            if not settings.ON_RASPBERRY_PI:
+                help_insert_1 = "not "
+            else:
+                help_insert_1 = ""
+
+            # Dynamically create the help string
+            terminal_help = f"I am {help_insert_1}a Raspberry. You can ask me to:\n"
+            for command, details in commands_list.items():
+                terminal_help += f"    {command}: {details['description']}\n"
+            terminal_help += "    h, ?: show this help\n"
+            terminal_help += "    s: show GPIO status\n"
+            terminal_help += "    t: show dunebugger configuration\n"
+            terminal_help += "    q, quit, exit: exit the program\n"
+
+            return terminal_help
+
+        except Exception as e:
+            logger.error(f"Error parsing commands list message: {e}")
 
 

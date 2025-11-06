@@ -8,6 +8,7 @@ from class_factory import terminal_interpreter, mqueue
 async def main():
     try:
         await mqueue.start_listener()
+        await terminal_interpreter.request_commands_list()
         await terminal_interpreter.terminal_listen()
     
     finally:
