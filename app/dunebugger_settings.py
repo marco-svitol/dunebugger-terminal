@@ -1,20 +1,15 @@
 from os import path
 import configparser
-from dotenv import load_dotenv
 from dunebugger_logging import logger, get_logging_level_from_name, set_logger_level
 from utils import is_raspberry_pi
 
 
 class DunebuggerSettings:
     def __init__(self):
-        load_dotenv()
         self.config = configparser.ConfigParser()
         # Set optionxform to lambda x: x to preserve case
         self.config.optionxform = lambda x: x
         self.dunebugger_config = path.join(path.dirname(path.abspath(__file__)), "config/dunebugger.conf")
-        self.command_handlers = {}
-        self.commands_config_path = path.join(path.dirname(path.abspath(__file__)), "config/commands.conf")
-        self.load_commands(self.commands_config_path)
         self.load_configuration(self.dunebugger_config)
         self.override_configuration()
         set_logger_level("dunebuggerLog", self.dunebuggerLogLevel)
@@ -36,22 +31,6 @@ class DunebuggerSettings:
             logger.info("Configuration loaded successfully")
         except configparser.Error as e:
             logger.error(f"Error reading {dunebugger_config} configuration: {e}")
-
-    def load_commands(self, commands_config_path=None):
-        if commands_config_path is None:
-            commands_config_path = self.commands_config_path
-
-        try:
-            self.config.read(commands_config_path)
-            for command, value in self.config.items("Commands"):
-                parts = value.split(", ")
-                handler = parts[0]
-                description = parts[1].strip('"')
-
-                self.command_handlers[command] = {"handler": handler, "description": description}
-
-        except configparser.Error as e:
-            logger.error(f"Error reading {commands_config_path} configuration: {e}")
 
     def validate_option(self, section, option, value):
         # Validation for specific options
