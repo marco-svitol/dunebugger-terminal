@@ -30,8 +30,18 @@ class TerminalInterpreter:
                 self._log_queue_message(command_reply_message["level"], command_reply_message["message"])
             elif subject == "commands_list":
                 self.help = self.setup_help(commands_list = command_reply_message)
+            elif subject == "terminal_command_reply":
+                if command_reply_message["success"] == True:
+                    print(command_reply_message["message"])
+                else:
+                    if command_reply_message["level"].lower() == "error":
+                        print(f"{COLORS['RED']}{command_reply_message['message']}{COLORS['RESET']}")
+                    elif command_reply_message["level"].lower() == "warning":
+                        print(f"{COLORS['YELLOW']}{command_reply_message['message']}{COLORS['RESET']}")
+                    else:
+                        print(f"{COLORS['MAGENTA']}{command_reply_message['message']}{COLORS['RESET']}")
             else:
-                print(command_reply_message)
+                logger.warning(f"Unknown subject in reply: {subject}")
         else:
             logger.warning("No reply message received.")
         
@@ -76,7 +86,7 @@ class TerminalInterpreter:
                             #TODO: useless
                             #print(command_reply_message)
                 else:
-                    print("\r")
+                    pass#print("\r")
             except EOFError:
                 logger.info("EOF encountered - terminal input not available (container environment)")
                 self.running = False
