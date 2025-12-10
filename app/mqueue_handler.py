@@ -9,8 +9,6 @@ class MessagingQueueHandler:
 
     def __init__(self):
         self.mqueue_sender = None
-        self.running = True
-        self.monitor_task = None
         self.terminal_interpreter = None
 
     async def process_mqueue_message(self, mqueue_message):

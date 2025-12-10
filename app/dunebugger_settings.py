@@ -36,11 +36,7 @@ class DunebuggerSettings:
         # Validation for specific options
         try:
             if section == "General":
-                if option in [
-                    "randomActionsMinSecs",
-                    "randomActionsMaxSecs",
-                ]:
-                    return str(value)
+                pass
             elif section == "MessageQueue":
                 if option in ["mQueueServers", "mQueueClientID", "mQueueSubjectRoot"]:
                     return str(value)
