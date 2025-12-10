@@ -8,6 +8,9 @@ from class_factory import terminal_interpreter, mqueue
 async def main():
     try:
         await mqueue.start_listener()
+        # wait that NATS is connected before continuing
+        while not mqueue.is_connected:
+            await asyncio.sleep(1)
         await terminal_interpreter.request_commands_list()
         await terminal_interpreter.terminal_listen()
     
