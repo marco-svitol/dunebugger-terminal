@@ -112,16 +112,18 @@ class TerminalInterpreter:
 
     def handle_show_gpio_status(self, gpio_status):
         color_red = COLORS["RED"]
-        print(f"{color_red}Current GPIO Status:")
+        print(f"\n{color_red}{'Pin':<5} {'Logic':<20} {'Label':<20} {'Mode':<8} {'State':<8} {'Switch':<8}")
+        print(f"{color_red}{'-' * 72}")
         for gpio_info in gpio_status:
             gpio = gpio_info["pin"]
+            logic = gpio_info["logic"]
             label = gpio_info["label"]
             mode = gpio_info["mode"]
             state = gpio_info["state"]
-            switchstate = gpio_info["switch"]
+            switch_state = gpio_info["switch"]
 
             color = COLORS["RESET"]
-            switchcolor = COLORS["RESET"]
+            switch_color = COLORS["RESET"]
 
             if mode == "INPUT":
                 color = COLORS["BLUE"]
@@ -129,17 +131,17 @@ class TerminalInterpreter:
                 color = COLORS["RESET"]
 
             if state == "HIGH":
-                switchcolor = COLORS["MAGENTA"]
+                switch_color = COLORS["MAGENTA"]
             elif state == "LOW":
-                switchcolor = COLORS["GREEN"]
+                switch_color = COLORS["GREEN"]
 
             if state == "ERROR":
                 color = COLORS["RED"]
-                switchcolor = color
-
+                switch_color = color
+            
             print(
-                f"{color}Pin {gpio} label: {label} \
-mode: {mode}, state: {state}, switch: {COLORS['RESET']}{switchcolor}{switchstate}{COLORS['RESET']}"
+                f"{color}{gpio:<5} {logic:<20} {label:<20} {mode:<8} "
+                f"{state:<8} {switch_color}{switch_state:<8}{COLORS['RESET']}"
             )
 
     def handle_show_configuration(self, settings):
