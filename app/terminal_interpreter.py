@@ -13,7 +13,7 @@ class TerminalInterpreter:
     def __init__(self, mqueue_handler):
 
         history_path = "~/.python_history"
-        self.enableHistory(history_path)
+        self.enable_history(history_path)
         atexit.register(self.save_history, history_path)
         self.mqueue_handler = mqueue_handler
         self.help = "Help not loaded yet."
@@ -98,13 +98,13 @@ class TerminalInterpreter:
                 self.running = False
                 break
 
-    def enableHistory(self, historyPath):
-        history_file = os.path.expanduser(historyPath)
+    def enable_history(self, history_path):
+        history_file = os.path.expanduser(history_path)
         if os.path.exists(history_file):
             readline.read_history_file(history_file)
 
-    def save_history(self, historyPath):
-        history_file = os.path.expanduser(historyPath)
+    def save_history(self, history_path):
+        history_file = os.path.expanduser(history_path)
         readline.write_history_file(history_file)
 
     def handle_help(self):
