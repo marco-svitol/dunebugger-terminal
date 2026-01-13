@@ -1,3 +1,10 @@
+## [1.0.0-beta.2](https://github.com/marco-svitol/dunebugger-terminal/compare/v1.0.0-beta.1...v1.0.0-beta.2) (2026-01-13)
+
+
+### Features
+
+* add initial README file with project overview ([1ee8ac2](https://github.com/marco-svitol/dunebugger-terminal/commit/1ee8ac244f0cb096e4befc4002956be87d8eb2c1))
+
 ## 1.0.0-beta.1 (2026-01-13)
 
 
